@@ -1,0 +1,42 @@
+---
+schemaVersion: "2.2"
+description: Perform a healthcheck on the target instance
+mainSteps:
+  - action: aws:downloadContent
+    name: DownloadScriptWindows
+    precondition:
+      StringEquals:
+        - platformType
+        - Windows
+    inputs:
+      sourceType: S3
+      sourceInfo: '{"path":"https://s3.amazonaws.com/jdheyburn-scripts/ssm_scripts/PerformHealthcheck.ps1"}'
+      destinationPath: PerformHealthcheck.ps1
+  - action: aws:runPowerShellScript
+    name: ExecutePerformHealthCheckWindows
+    precondition:
+      StringEquals:
+        - platformType
+        - Windows
+    inputs:
+      runCommand:
+        - ..\downloads\PerformHealthcheck.ps1
+  - action: aws:downloadContent
+    name: DownloadScriptLinux
+    precondition:
+      StringEquals:
+        - platformType
+        - Linux
+    inputs:
+      sourceType: S3
+      sourceInfo: '{"path":"https://s3.amazonaws.com/jdheyburn-scripts/ssm_scripts/perform_healthcheck.sh"}'
+      destinationPath: perform_healthcheck.sh
+  - action: aws:runShellScript
+    name: ExecutePerformHealthCheckLinux
+    precondition:
+      StringEquals:
+        - platformType
+        - Linux
+    inputs:
+      runCommand:
+        - ../downloads/perform_healthcheck.sh
