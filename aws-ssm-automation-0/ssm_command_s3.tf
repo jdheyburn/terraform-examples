@@ -78,7 +78,7 @@ data "aws_iam_policy_document" "s3_allow_script_download" {
       # identifiers = [aws_iam_role.vm_base.arn]
     }
 
-    resources = ["${aws_s3_bucket.script_bucket.arn}/*"]
+    resources = ["${aws_s3_bucket.script_bucket.arn}/ssm_scripts/*"]
   }
 }
 
