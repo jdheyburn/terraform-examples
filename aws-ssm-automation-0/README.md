@@ -1,6 +1,6 @@
 # aws-ssm-automation-0
 
-This example follows the [SSM Command post](https://jdheyburn.co.uk/blog/automating-instance-hygiene-with-aws-ssm-0/) on my blog. It creates two SSM Command Documents:
+This example follows the [SSM Command post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-0/) on my blog. It creates two SSM Command Documents:
 
 1. A multi-platform command document with the script embedded in the document
 2. A command document that retrieves the script from S3 and executes it on the instance
