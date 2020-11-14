@@ -32,7 +32,7 @@ resource "aws_iam_instance_profile" "vm_base" {
 
 data "aws_iam_policy_document" "ssm_scripts" {
   statement {
-    sid    = "AllowS3"
+    sid    = "AllowS3Get"
     effect = "Allow"
 
     actions = ["s3:GetObject"]
@@ -43,10 +43,24 @@ data "aws_iam_policy_document" "ssm_scripts" {
   }
 
   statement {
-    sid    = "AllowKMS"
+    sid    = "AllowS3Put"
     effect = "Allow"
 
-    actions = ["kms:Decrypt"]
+    actions = ["s3:PutObject"]
+
+    resources = [
+      "${aws_s3_bucket.script_bucket.arn}/ssm_output/*",
+    ]
+  }
+
+  statement {
+    sid    = "AllowKMSEncryptAndDecrypt"
+    effect = "Allow"
+
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+    ]
 
     resources = [aws_kms_key.script_bucket_key.arn]
   }

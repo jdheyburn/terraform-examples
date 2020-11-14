@@ -27,10 +27,13 @@ data "aws_iam_policy_document" "kms_allow_decrypt" {
   }
 
   statement {
-    sid    = "AllowDecrypt"
+    sid    = "AllowEncryptAndDecrypt"
     effect = "Allow"
 
-    actions = ["kms:Decrypt"]
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey",
+    ]
 
     principals {
       type        = "AWS"
@@ -66,7 +69,7 @@ data "aws_caller_identity" "current" {}
 
 data "aws_iam_policy_document" "s3_allow_script_download" {
   statement {
-    sid    = "AllowAccountAccess"
+    sid    = "AllowAccountS3GetAccess"
     effect = "Allow"
 
     actions = ["s3:GetObject"]
@@ -79,6 +82,22 @@ data "aws_iam_policy_document" "s3_allow_script_download" {
     }
 
     resources = ["${aws_s3_bucket.script_bucket.arn}/ssm_scripts/*"]
+  }
+
+  statement {
+    sid    = "AllowAccountS3PutAccess"
+    effect = "Allow"
+
+    actions = ["s3:PutObject"]
+
+    principals {
+      type        = "AWS"
+      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
+      # TIP: For increased security only give decrypt permissions to roles that need it
+      # identifiers = [aws_iam_role.vm_base.arn]
+    }
+
+    resources = ["${aws_s3_bucket.script_bucket.arn}/ssm_output/*"]
   }
 }
 

@@ -45,10 +45,12 @@ resource "aws_ssm_maintenance_window_task" "patch_task" {
 
   task_invocation_parameters {
     run_command_parameters {
-      timeout_seconds  = 3600
+      timeout_seconds      = 3600
+      output_s3_bucket     = aws_s3_bucket.script_bucket.id
+      output_s3_key_prefix = "ssm_output/"
 
       parameter {
-        name = "Operation"
+        name   = "Operation"
         values = ["Scan"]
       }
     }
@@ -72,7 +74,9 @@ resource "aws_ssm_maintenance_window_task" "healthcheck_task" {
 
   task_invocation_parameters {
     run_command_parameters {
-      timeout_seconds  = 600
+      timeout_seconds      = 600
+      output_s3_bucket     = aws_s3_bucket.script_bucket.id
+      output_s3_key_prefix = "ssm_output/"
     }
   }
 }
