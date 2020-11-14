@@ -63,6 +63,18 @@ resource "aws_s3_bucket" "script_bucket" {
       }
     }
   }
+
+  # Remove old SSM command output logs
+  lifecycle_rule {
+    id = "RemoveOldSSMOutputLogs"
+    enabled = true
+
+    prefix = "ssm_output/"
+
+    expiration {
+      days = 90
+    }
+  }
 }
 
 data "aws_caller_identity" "current" {}
