@@ -1,9 +1,8 @@
-# aws-ssm-automation-0
+# aws-ssm-automation-1-logging
 
-This example follows the [SSM Command post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-0/) on my blog. It creates two SSM Command Documents:
+This example follows the [Maintenance Window post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-1/) on my blog. It automates the command documents created in the previous posts [example code](https://github.com/jdheyburn/terraform-examples/tree/main/aws-ssm-automation-0).
 
-1. A multi-platform command document with the script embedded in the document
-2. A command document that retrieves the script from S3 and executes it on the instance
+It has a sister repository - [aws-ssm-automation-1-barebones](https://github.com/jdheyburn/terraform-examples/tree/main/aws-ssm-automation-1-barebones) - which is meant to be `terraform apply`'d **before** this repository is deployed in your environment - allowing you to view the diff between the two.
 
 ## Setup
 
