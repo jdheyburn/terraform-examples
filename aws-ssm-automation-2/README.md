@@ -1,4 +1,4 @@
-# aws-ssm-automation-1-logging
+# aws-ssm-automation-2
 
 This example follows the [Maintenance Window post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-1/) on my blog. It automates the command documents created in the previous posts [example code](https://github.com/jdheyburn/terraform-examples/tree/main/aws-ssm-automation-0).
 
