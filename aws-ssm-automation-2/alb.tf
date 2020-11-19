@@ -14,9 +14,9 @@ module "hello_world_alb" {
 
   load_balancer_type = "application"
 
-  vpc_id             = data.aws_vpc.default.id
-  subnets            = tolist(data.aws_subnet_ids.all.ids)[0]
-  security_groups    = [aws_security_group.hello_world_alb.id]
+  vpc_id          = data.aws_vpc.default.id
+  subnets         = tolist(data.aws_subnet_ids.all.ids)
+  security_groups = [aws_security_group.hello_world_alb.id]
 
   # access_logs = {
   #   bucket = "my-alb-logs"
@@ -28,6 +28,12 @@ module "hello_world_alb" {
       backend_protocol = "HTTP"
       backend_port     = 8080
       target_type      = "instance"
+      health_check = {
+        enabled             = true
+        healthy_threshold   = 2
+        unhealthy_threshold = 2
+        interval            = 6
+      }
     }
   ]
 
@@ -53,12 +59,9 @@ module "hello_world_alb" {
   }
 }
 
-# TODO - create EC2 instances and add them to target group output from above
-# TODO - create security group rules allowing traffic from 443 <-> 8080 on 
-# TODO create cert for ec2 instance
+# TODO create cert for alb
 # TODO have ALB sit in public subnet
 # TODO have ec2 sit in private subnet
-# TODO create hellworld app that has a healthcheck endpoint too
 
 resource "aws_security_group" "hello_world_alb" {
   name   = "HelloWorldALB"
@@ -75,19 +78,19 @@ resource "aws_security_group_rule" "alb_ingress_user" {
 }
 
 resource "aws_security_group_rule" "alb_egress_ec2" {
-  security_group_id = aws_security_group.hello_world_alb.id
-  type              = "egress"
-  from_port         = 8080
-  to_port           = 8080
-  protocol          = "tcp"
+  security_group_id        = aws_security_group.hello_world_alb.id
+  type                     = "egress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
   source_security_group_id = aws_security_group.vm_base.id
 }
 
 resource "aws_security_group_rule" "ec2_ingress_alb" {
-  security_group_id = aws_security_group.vm_base.id
-  type              = "ingress"
-  from_port         = 8080
-  to_port           = 8080
-  protocol          = "tcp"
+  security_group_id        = aws_security_group.vm_base.id
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
   source_security_group_id = aws_security_group.hello_world_alb.id
 }

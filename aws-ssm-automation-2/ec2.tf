@@ -7,7 +7,7 @@ module "hello_world_ec2" {
   name                        = "linux-ec2"
   ami                         = "ami-0bb3fad3c0286ebd5"
   instance_type               = "t2.micro"
-  subnet_id                   = tolist(data.aws_subnet_ids.all.ids)[0]
+  subnet_ids                  = tolist(data.aws_subnet_ids.all.ids)
   vpc_security_group_ids      = [aws_security_group.vm_base.id]
   associate_public_ip_address = true
   key_name                    = module.key_pair.this_key_pair_key_name
@@ -21,7 +21,7 @@ module "hello_world_ec2" {
   ]
 
   tags = {
-    "Terraform" = "true"
+    "App" = "HelloWorld"
   }
 }
 
@@ -33,8 +33,8 @@ module "key_pair" {
 }
 
 resource "aws_lb_target_group_attachment" "hello_world_tg_att" {
-  count = length(module.hello_world_ec2.ids)
-  target_group_arn = module.hello_world_alb.target_group_arns.arn
-  target_id        = element(module.hello_world_ec2.ids, count.index)
+  count = length(module.hello_world_ec2.id)
+  target_group_arn = module.hello_world_alb.target_group_arns[0]
+  target_id        = element(module.hello_world_ec2.id, count.index)
   port             = 8080
 }
