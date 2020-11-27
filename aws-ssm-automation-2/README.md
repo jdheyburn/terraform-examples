@@ -1,8 +1,6 @@
 # aws-ssm-automation-2
 
-This example follows the [Maintenance Window post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-1/) on my blog. It automates the command documents created in the previous posts [example code](https://github.com/jdheyburn/terraform-examples/tree/main/aws-ssm-automation-0).
-
-It has a sister repository - [aws-ssm-automation-1-barebones](https://github.com/jdheyburn/terraform-examples/tree/main/aws-ssm-automation-1-barebones) - which is meant to be `terraform apply`'d **before** this repository is deployed in your environment - allowing you to view the diff between the two.
+This example follows the [Maintenance Window post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-2/) on my blog. It focuses on creating SSM Automation documents and attaching them to a maintenance window.
 
 ## Setup
 

@@ -13,16 +13,6 @@ resource "aws_security_group_rule" "ssh" {
   security_group_id = aws_security_group.vm_base.id
 }
 
-
-resource "aws_security_group_rule" "rdp" {
-  type              = "ingress"
-  from_port         = 3389
-  to_port           = 3389
-  protocol          = "tcp"
-  cidr_blocks       = [local.ip_address]
-  security_group_id = aws_security_group.vm_base.id
-}
-
 resource "aws_security_group_rule" "egress" {
   type              = "egress"
   from_port         = -1
