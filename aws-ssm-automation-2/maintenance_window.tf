@@ -27,7 +27,7 @@ resource "aws_ssm_maintenance_window_task" "patch_with_healthcheck" {
   service_role_arn = aws_iam_role.patch_mw_role.arn
 
   max_concurrency = "1"
-  max_errors      = 0
+  max_errors      = "0"
 
   targets {
     key    = "WindowTargetIds"

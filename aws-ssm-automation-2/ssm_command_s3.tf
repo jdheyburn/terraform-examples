@@ -66,7 +66,7 @@ resource "aws_s3_bucket" "script_bucket" {
 
   # Remove old SSM command output logs
   lifecycle_rule {
-    id = "RemoveOldSSMOutputLogs"
+    id      = "RemoveOldSSMOutputLogs"
     enabled = true
 
     prefix = "ssm_output/"

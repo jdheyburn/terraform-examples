@@ -31,10 +31,3 @@ module "key_pair" {
   key_name   = "vm-base"
   public_key = file("vm-base.pub")
 }
-
-resource "aws_lb_target_group_attachment" "hello_world_tg_att" {
-  count = length(module.hello_world_ec2.id)
-  target_group_arn = module.hello_world_alb.target_group_arns[0]
-  target_id        = element(module.hello_world_ec2.id, count.index)
-  port             = 8080
-}
