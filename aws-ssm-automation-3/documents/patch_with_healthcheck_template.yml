@@ -1,0 +1,24 @@
+---
+schemaVersion: "0.3"
+description: Executes a patching event on the instance followed by a healthcheck
+parameters:
+  InstanceIds:
+    type: StringList
+    description: The instance to target
+mainSteps:
+  - name: InvokePatchEvent
+    action: aws:runCommand
+    inputs:
+      DocumentName: AWS-RunPatchBaseline
+      InstanceIds: "{{ InstanceIds }}"
+      OutputS3BucketName: ${output_s3_bucket_name}
+      OutputS3KeyPrefix: ${output_s3_key_prefix}
+      Parameters:
+        Operation: Scan
+  - name: ExecuteHealthcheck
+    action: aws:runCommand
+    inputs:
+      DocumentName: ${healthcheck_document_arn}
+      InstanceIds: "{{ InstanceIds }}"
+      OutputS3BucketName: ${output_s3_bucket_name}
+      OutputS3KeyPrefix: ${output_s3_key_prefix}
