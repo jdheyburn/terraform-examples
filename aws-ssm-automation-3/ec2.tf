@@ -23,6 +23,8 @@ module "hello_world_ec2" {
   tags = {
     "App" = "HelloWorld"
   }
+
+  user_data =  file("scripts/hello_world_user_data.sh")
 }
 
 module "key_pair" {
