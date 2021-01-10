@@ -1,0 +1,33 @@
+---
+schemaVersion: "0.3"
+description: Executes a reboot on the instance followed by a healthcheck
+parameters:
+  InstanceIds:
+    type: StringList
+    description: The instance to target
+mainSteps:
+  - name: InvokeReboot
+    action: aws:runCommand
+    inputs:
+      DocumentName: AWS-RunShellScript
+      InstanceIds: "{{ InstanceIds }}"
+      OutputS3BucketName: ${output_s3_bucket_name}
+      OutputS3KeyPrefix: ${output_s3_key_prefix}
+      Parameters:
+        commands: |
+          flag_location=/home/ec2-user/REBOOT_STARTED
+          if [ ! -f $flag_location ]; then
+            echo "Creating flag file at $flag_location"
+            touch $flag_location
+            echo "Reboot initiated"
+            exit 194
+          fi
+          echo "Reboot finished, removing flag file at $flag_location"
+          rm $flag_location
+  - name: ExecuteHealthcheck
+    action: aws:runCommand
+    inputs:
+      DocumentName: ${healthcheck_document_arn}
+      InstanceIds: "{{ InstanceIds }}"
+      OutputS3BucketName: ${output_s3_bucket_name}
+      OutputS3KeyPrefix: ${output_s3_key_prefix}

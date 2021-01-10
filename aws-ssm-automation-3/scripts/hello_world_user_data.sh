@@ -19,5 +19,6 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 }
 EOF
 yum install golang -y
+(crontab -l 2>/dev/null; echo "@reboot nohup go run /home/ec2-user/main.go") | crontab -
 export GOCACHE=/tmp/go-cache
 nohup go run /home/ec2-user/main.go

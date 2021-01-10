@@ -10,7 +10,6 @@ module "hello_world_alb" {
   subnets         = tolist(data.aws_subnet_ids.all.ids)
   security_groups = [aws_security_group.hello_world_alb.id]
 
-
   target_groups = [
     {
       name_prefix      = "pref-"
@@ -33,10 +32,6 @@ module "hello_world_alb" {
       target_group_index = 0
     }
   ]
-
-  tags = {
-    Environment = "Test"
-  }
 }
 
 

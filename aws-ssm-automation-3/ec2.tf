@@ -5,7 +5,7 @@ module "hello_world_ec2" {
   instance_count = 3
 
   name                        = "linux-ec2"
-  ami                         = "ami-0bb3fad3c0286ebd5"
+  ami                         = "ami-01720b5f421cf0179"
   instance_type               = "t2.micro"
   subnet_ids                  = tolist(data.aws_subnet_ids.all.ids)
   vpc_security_group_ids      = [aws_security_group.vm_base.id]
