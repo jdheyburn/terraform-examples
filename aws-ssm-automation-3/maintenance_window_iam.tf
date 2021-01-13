@@ -39,6 +39,30 @@ data "aws_iam_policy_document" "mw_role_additional" {
 
     resources = ["*"]
   }
+
+  statement {
+    sid    = "AllowElBRead"
+    effect = "Allow"
+
+    actions = [
+      "elasticloadbalancing:DescribeTargetHealth",
+    ]
+
+    resources = ["*"]
+
+  }
+
+  statement {
+    sid = "AllowELBWrite"
+    effect = "Allow"
+  
+    actions = [
+      "elasticloadbalancing:DeregisterTargets",
+      "elasticloadbalancing:RegisterTargets",
+    ]
+
+    resources = [module.hello_world_alb.target_group_arns[0]]
+  }
 }
 
 resource "aws_iam_policy" "mw_role_add" {

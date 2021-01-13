@@ -22,7 +22,7 @@ resource "aws_ssm_maintenance_window_target" "patch_with_healthcheck_target" {
 resource "aws_ssm_maintenance_window_task" "patch_with_healthcheck" {
   window_id        = aws_ssm_maintenance_window.patch_with_healthcheck.id
   task_type        = "AUTOMATION"
-  task_arn         = aws_ssm_document.patch_with_healthcheck.arn
+  task_arn         = aws_ssm_document.graceful_reboot_instance.arn
   priority         = 10
   service_role_arn = aws_iam_role.patch_mw_role.arn
 
@@ -39,8 +39,13 @@ resource "aws_ssm_maintenance_window_task" "patch_with_healthcheck" {
       document_version = "$LATEST"
 
       parameter {
-        name = "InstanceIds"
+        name = "InstanceId"
         values = ["{{ TARGET_ID }}"]
+      }
+
+      parameter {
+        name = "TargetGroupArn"
+        values = [module.hello_world_alb.target_group_arns[0]]
       }
     }
   }

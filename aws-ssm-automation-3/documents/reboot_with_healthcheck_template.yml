@@ -27,7 +27,13 @@ mainSteps:
   - name: ExecuteHealthcheck
     action: aws:runCommand
     inputs:
-      DocumentName: ${healthcheck_document_arn}
+      DocumentName: AWS-RunShellScript
       InstanceIds: "{{ InstanceIds }}"
       OutputS3BucketName: ${output_s3_bucket_name}
       OutputS3KeyPrefix: ${output_s3_key_prefix}
+      Parameters:
+        commands: |
+          sleep 60
+          if ! curl http://localhost:8080/; then
+            exit 1
+          fi
