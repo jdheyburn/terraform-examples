@@ -1,6 +1,6 @@
-# aws-ssm-automation-2
+# aws-ssm-automation-3
 
-This example follows the [Maintenance Window post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-2/) on my blog. It focuses on creating SSM Automation documents and attaching them to a maintenance window.
+This example follows the [Maintenance Window post](https://jdheyburn.co.uk/blog/automate-instance-hygiene-with-aws-ssm-3/) on my blog. It looks at improvements from the previous post by adding a load balancer to the architecture to allow us control over what instances receive traffic while maintenance is being performed via an automation document.
 
 ## Setup
 
