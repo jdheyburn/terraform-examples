@@ -1,0 +1,115 @@
+---
+schemaVersion: "0.3"
+description: Gracefully reboot instance with healthchecks
+parameters:
+  InstanceId:
+    type: String
+    description: The instance to target
+  TargetGroupArn:
+    type: String
+    description: The target group ARN for the instance
+mainSteps:
+  - name: AssertTargetGroupHealthBefore
+    description: Assert the target group is healthy before we bounce Tomcat
+    action: aws:assertAwsResourceProperty
+    inputs:
+      Service: elbv2
+      Api: DescribeTargetHealth
+      PropertySelector: $.TargetHealthDescriptions..TargetHealth.State
+      DesiredValues:
+        - healthy
+      TargetGroupArn: "{{ TargetGroupArn }}"
+    maxAttempts: 3
+    timeoutSeconds: 60
+  - name: AssertInstanceIsInTargetGroup
+    description: Assert the instance is a healthy target of the target group
+    action: aws:assertAwsResourceProperty
+    inputs:
+      Service: elbv2
+      Api: DescribeTargetHealth
+      PropertySelector: $.TargetHealthDescriptions[0].TargetHealth.State
+      DesiredValues:
+        - healthy
+      TargetGroupArn: "{{ TargetGroupArn }}"
+      Targets:
+        - Id: "{{ InstanceId }}"
+    maxAttempts: 3
+    timeoutSeconds: 60
+  - name: DeregisterInstanceFromTargetGroup
+    description: Proactively remove the instance from the target group
+    action: aws:executeAwsApi
+    inputs:
+      Service: elbv2
+      Api: DeregisterTargets
+      TargetGroupArn: "{{ TargetGroupArn }}"
+      Targets:
+        - Id: "{{ InstanceId }}"
+  - name: WaitForDeregisteredTarget
+    description: Wait for the instance to drain connections
+    action: aws:waitForAwsResourceProperty
+    inputs:
+      Service: elbv2
+      Api: DescribeTargetHealth
+      PropertySelector: $.TargetHealthDescriptions[0].TargetHealth.State
+      DesiredValues:
+        - unused
+      TargetGroupArn: "{{ TargetGroupArn }}"
+      Targets:
+        - Id: "{{ InstanceId }}"
+    maxAttempts: 1
+    timeoutSeconds: 600
+  - name: AssertTargetIsDeregistered
+    description: Assert the instance is no longer a target
+    action: aws:assertAwsResourceProperty
+    inputs:
+      Service: elbv2
+      Api: DescribeTargetHealth
+      PropertySelector: $.TargetHealthDescriptions[0].TargetHealth.State
+      DesiredValues:
+        - unused
+      TargetGroupArn: "{{ TargetGroupArn }}"
+      Targets:
+        - Id: "{{ InstanceId }}"
+  - name: RebootWithHealthcheck
+    description: Reboot the instance with a healthcheck afterward
+    action: aws:executeAutomation
+    inputs:
+      DocumentName: ${reboot_with_healthcheck_document_arn}
+      RuntimeParameters:
+        InstanceIds:
+          - "{{ InstanceId }}"
+    maxAttempts: 1
+    onFailure: step:RegisterTarget
+  - name: RegisterTarget
+    description: Add the instance back as a target
+    action: aws:executeAwsApi
+    inputs:
+      Service: elbv2
+      Api: RegisterTargets
+      TargetGroupArn: "{{ TargetGroupArn }}"
+      Targets:
+        - Id: "{{ InstanceId }}"
+  - name: WaitForHealthyTargetGroup
+    description: Wait for the target group to become healthy again
+    action: aws:waitForAwsResourceProperty
+    inputs:
+      Service: elbv2
+      Api: DescribeTargetHealth
+      PropertySelector: $.TargetHealthDescriptions..TargetHealth.State
+      DesiredValues:
+        - healthy
+      TargetGroupArn: "{{ TargetGroupArn }}"
+    maxAttempts: 1
+  - name: AssertTargetGroupHealthAfter
+    description: Assert the target group is healthy after activity
+    action: aws:assertAwsResourceProperty
+    inputs:
+      Service: elbv2
+      Api: DescribeTargetHealth
+      PropertySelector: $.TargetHealthDescriptions..TargetHealth.State
+      DesiredValues:
+        - healthy
+      TargetGroupArn: "{{ TargetGroupArn }}"
+    maxAttempts: 3
+    timeoutSeconds: 60
+    isEnd: true
