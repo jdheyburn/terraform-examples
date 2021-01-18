@@ -1,3 +1,28 @@
+data "aws_ami" "amazon_linux_2" {
+  owners           = ["amazon"]
+  executable_users = ["self"]
+  most_recent      = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+}
 
 module "hello_world_ec2" {
   source         = "terraform-aws-modules/ec2-instance/aws"
@@ -5,7 +30,7 @@ module "hello_world_ec2" {
   instance_count = 3
 
   name                        = "linux-ec2"
-  ami                         = "ami-01720b5f421cf0179"
+  ami                         = data.aws_ami.amazon_linux_2.id
   instance_type               = "t2.micro"
   subnet_ids                  = tolist(data.aws_subnet_ids.all.ids)
   vpc_security_group_ids      = [aws_security_group.vm_base.id]
@@ -24,7 +49,7 @@ module "hello_world_ec2" {
     "App" = "HelloWorld"
   }
 
-  user_data =  file("scripts/hello_world_user_data.sh")
+  user_data = file("scripts/hello_world_user_data.sh")
 }
 
 module "key_pair" {
